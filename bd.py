@@ -37,10 +37,41 @@ class DistritoDB(DatabaseDB):
         con.close()
 
 
+    def update(self, id, nombre):
+        con = psycopg2.connect(database=self.database, user=self.user, password=self.password)
+        cur = con.cursor()
+        query = "UPDATE {} set " \
+                " nombre = %s" \
+                " where id = %s;".format(self.model)
+
+        data = (nombre, id)
+        updated_rows = cur.rowcount
+        cur.execute(query, data)
+        con.commit()
+
+        cur.close()
+        con.close()
+
+        return updated_rows
+
+
+    def delete(self, id):
+        con = psycopg2.connect(database=self.database, user=self.user, password=self.password)
+        cur = con.cursor()
+        query = "DELETE FROM {} " \
+                " where id = %s;".format(self.model)
+
+        data = (id, )
+        cur.execute(query, data)
+        con.commit()
+
+        cur.close()
+        con.close()
+
     def poblar(self):
         self.insertar(1, 'Lima')
         self.insertar(2, 'Callao')
-        self.insertar(3, 'Lince')
+        self.insertar(3, 'Linceeee')
 
 
 class MotelDB(DatabaseDB):
@@ -64,8 +95,12 @@ class MotelDB(DatabaseDB):
 
 
 d = DistritoDB(database="moteles", user='postgres', password='123456', model='motel_distrito')
+d.update(3, 'Ejemplo')
+d.insertar(4, 'Para borrar')
+d.listar()
+d.delete(4)
 d.listar()
 
 m = MotelDB(database="moteles", user='postgres', password='123456', model='motel_motel')
-m.poblar()
+#m.poblar()
 m.listar()
